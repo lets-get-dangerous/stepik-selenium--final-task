@@ -2,12 +2,13 @@ import pytest
 from .pages.product_page import ProductPage
 
 
-@pytest.mark.parametrize('promo_offer',
-                         [pytest.param(i, marks=pytest.mark.xfail(i==7, reason=''))
-                          for i in range(10)])
-def test_guest_can_add_product_to_basket(browser, promo_offer):
-    link = f"http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/?promo=offer{promo_offer}"
-    
+base_url = "http://selenium1py.pythonanywhere.com/catalogue/coders-at-work_207/?promo=offer{}"
+urls_list = [pytest.param(base_url.format(i), marks=pytest.mark.xfail(i==7, reason=''))
+             for i in range(10)]
+
+
+@pytest.mark.parametrize('link', urls_list)
+def test_guest_can_add_product_to_basket(browser, link):
     page = ProductPage(browser, link)
     page.open()
     
@@ -24,3 +25,5 @@ def test_guest_can_add_product_to_basket(browser, promo_offer):
     price = page.get_product_price()
     page.check_product_name_in_success_message_is_equal(product_name)
     page.check_basket_cost_in_message_is_equal(price)
+
+    
