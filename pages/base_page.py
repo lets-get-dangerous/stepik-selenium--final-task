@@ -4,12 +4,16 @@ from selenium.common.exceptions import NoAlertPresentException
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait 
 from selenium.webdriver.support import expected_conditions as EC
-
+from .locators import BasePageLocators as locator
 
 class BasePage():
     def __init__(self, browser, url):
         self.browser = browser
         self.url = url
+
+    def go_to_login_page(self):
+        login_link = self.browser.find_element(*locator.LOGIN_LINK)
+        login_link.click() 
 
     def open(self):
         self.browser.get(self.url)
@@ -37,8 +41,7 @@ class BasePage():
         except TimeoutException:
             return True
         return False
-    
-    
+        
     def solve_quiz_and_get_code(self):
         alert = self.browser.switch_to.alert
         x = alert.text.split(" ")[2]
@@ -52,3 +55,6 @@ class BasePage():
             alert.accept()
         except NoAlertPresentException:
             print("No second alert presented")
+
+    def should_be_login_link(self):
+        assert self.is_element_present(*locator.LOGIN_LINK), "Login link is not presented"
